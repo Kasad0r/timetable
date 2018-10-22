@@ -3,6 +3,8 @@ package com.kasad0r.logic.json;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kasad0r.entity.DayOfTheWeek;
 import com.kasad0r.entity.Group;
+import com.kasad0r.logic.exel.Reader;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +13,15 @@ import java.util.List;
 
 public class Converter {
 
+
+    @Test
+    public void Test() {
+        try {
+            toJSON(new Reader().readXLSDoc(Reader.getExelDocsFilePaths(".xls").get(0)).get(0));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     private final static String baseFile = "user.json";
 
     public static void toJSON(Group[] groups) throws IOException {

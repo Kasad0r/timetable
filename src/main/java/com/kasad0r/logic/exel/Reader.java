@@ -3,6 +3,7 @@ package com.kasad0r.logic.exel;
 import com.kasad0r.entity.*;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,6 +21,10 @@ public class Reader {
                 -> name.endsWith(param))));
     }
 
+    @Test
+    public void Test() {
+        new Reader().readXLSDoc(Reader.getExelDocsFilePaths(".xls").get(0)).get(0).getDaysOfWeek().forEach(System.out::println);
+    }
     //To initialize
     public static List<String> getGroupNamesFromShedule() {
         List<String> groups = new ArrayList<>();
@@ -67,7 +72,7 @@ public class Reader {
         Group group = new Group();
         group.setGroupName(sheet.getSheetName());
         List<DayOfTheWeek> dayOfTheWeeks = new ArrayList<>();
-        Map<Lesson, TimeOfLessons.Pair> lessonTimeOfLessonsMap = new LinkedHashMap<>();
+        Map<Lesson, TimeOfLessons.Pair> lessonTimeOfLessonsMap = new HashMap<>();
 
         List<LessonAndTime> dayLessons = new ArrayList<>();
         dayLessons.add(createPare(sheet, CellCordinatesDayOfWeeks.MON_TIME_0, CellCordinatesDayOfWeeks.MON_LESSON_0, CellCordinatesDayOfWeeks.MON_TEACHER_0));
@@ -78,10 +83,12 @@ public class Reader {
         dayLessons.add(createPare(sheet, CellCordinatesDayOfWeeks.MON_TIME_5, CellCordinatesDayOfWeeks.MON_LESSON_5, CellCordinatesDayOfWeeks.MON_TEACHER_5));
         dayLessons.add(createPare(sheet, CellCordinatesDayOfWeeks.MON_TIME_6, CellCordinatesDayOfWeeks.MON_LESSON_6, CellCordinatesDayOfWeeks.MON_TEACHER_6));
         dayLessons.add(createPare(sheet, CellCordinatesDayOfWeeks.MON_TIME_7, CellCordinatesDayOfWeeks.MON_LESSON_7, CellCordinatesDayOfWeeks.MON_TEACHER_7));
+
         dayLessons.forEach(elem -> lessonTimeOfLessonsMap.put(elem.getLesson(),
                 TimeOfLessons.getPairTimeByPairId(elem.getInteger())));
         dayOfTheWeeks.add(new DayOfTheWeek().setLessons(lessonTimeOfLessonsMap).setDayName(sheet
                 .getRow(CellCordinatesDayOfWeeks.MONDAY.getRowPos()).getCell(CellCordinatesDayOfWeeks.MONDAY.getCellPos()).getStringCellValue()));
+        System.out.println(dayOfTheWeeks);
         dayLessons.clear();
 
         dayLessons.add(createPare(sheet, CellCordinatesDayOfWeeks.THU_TIME_0, CellCordinatesDayOfWeeks.THU_LESSON_0, CellCordinatesDayOfWeeks.THU_TEACHER_0));
@@ -170,13 +177,15 @@ public class Reader {
         return group;
     }
 
-    private static LessonAndTime createPare(Sheet sheet, CellCordinatesDayOfWeeks time, CellCordinatesDayOfWeeks lesson, CellCordinatesDayOfWeeks teacher) {
-        return new LessonAndTime((int) sheet.getRow(time.getRowPos())
-                .getCell(time.getCellPos()).getNumericCellValue(),
-                new Lesson(sheet.getRow(lesson.getRowPos())
-                        .getCell(lesson.getCellPos()).getStringCellValue())
+    private static LessonAndTime createPare(Sheet sheet,
+                                            CellCordinatesDayOfWeeks time,
+                                            CellCordinatesDayOfWeeks lesson,
+                                            CellCordinatesDayOfWeeks teacher) {
+        return new LessonAndTime((int) sheet.getRow(time.getRowPos()).getCell(time.getCellPos()).getNumericCellValue(),
+                new Lesson(sheet.getRow(lesson.getRowPos()).getCell(lesson.getCellPos()).getStringCellValue())
                         .setTeacher(new Teacher(sheet.getRow(teacher.getRowPos())
-                                .getCell(teacher.getCellPos()).getStringCellValue())));
+                                .getCell(teacher.getCellPos())
+                                .getStringCellValue())));
     }
 
 
@@ -188,7 +197,6 @@ public class Reader {
             this.integer = integer;
             this.lesson = lesson;
         }
-
         Integer getInteger() {
             return integer;
         }
@@ -199,6 +207,7 @@ public class Reader {
                     "integer=" + integer +
                     ", lesson=" + lesson +
                     '}';
+
         }
 
         Lesson getLesson() {

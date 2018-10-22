@@ -146,7 +146,5 @@ public class StudentController {
             logger.info("Start backup students");
             Serialize.serializeStudentTempList();
         }
-
     }
-
 }
